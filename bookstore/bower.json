@@ -1,0 +1,22 @@
+{
+  "name": "bookstore",
+  "version": "0.0.1",
+  "authors": [
+    "ozzy <nowordforfree@gmail.com>"
+  ],
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "~3.3.4"
+  }
+}

@@ -1,0 +1,7 @@
+div#sidebar-wrapper
+  ul.sidebar-nav
+    li.sidebar-brand
+      span Show only following genre:
+    for genre, i in genres
+      li
+        a(href='?genre=#{genre}') #{genre}
