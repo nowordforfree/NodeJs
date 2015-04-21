@@ -1,0 +1,29 @@
+/*	sample config file	*/
+/*modify as necessary and save as config.js*/
+
+var config = {
+	"paperback_types": [
+		"Paperback",
+		"Hardcover",
+		"Newspaper",
+		"Mass Market",
+		"Trade",
+		"Galleys",
+		"Chapbook"
+	],
+	"book_genres": [
+		"A Novel",
+		"Thriller",
+		"Phantastic",
+		"Poetry"
+	],
+	"display_columns": {
+		"isbn": "ISBN13",
+		"name": "Book Name",
+		"created": "Created"
+	},
+	"mongo": {
+		"ip": "10.10.100.133",
+		"port": "27017"
+	}
+}
