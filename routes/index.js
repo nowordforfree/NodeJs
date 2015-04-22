@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var db = require('../lib/mongoose');
+var book_model = require('../models/book_model');
 var config = require('../config');
 
 function GetBooks(req, callback) {
@@ -15,16 +15,16 @@ function GetBooks(req, callback) {
 		if (key != "page")
 			query[key] = req.query[key];
 	}
-	db.find(
+	book_model.find(
 		query,
 		options,
 		{ skip: skip, limit: 25, sort: { created: -1 }},
-		function(err, books) {
+		function(err, book_model) {
 			if (err) {
 				callback(err);
 			}
 			else {
-				callback(JSON.parse(JSON.stringify(books)));
+				callback(JSON.parse(JSON.stringify(book_model)));
 			}
 		});
 }
@@ -38,15 +38,15 @@ function GetOne(req, callback) {
 		if (key != "page")
 			query[key] = req.query[key];
 	}
-	db.find(
+	book_model.find(
 		query,
 		options,
-		function(err, books) {
+		function(err, book_model) {
 			if (err) {
 				callback(err);
 			}
 			else {
-				callback(JSON.parse(JSON.stringify(books)));
+				callback(JSON.parse(JSON.stringify(book_model)));
 			}
 		});
 }
@@ -57,7 +57,7 @@ router.get('/', function(req, res) {
 
 router.get('/home', function(req, res) {
 	var pagecount;
-	db.find().count({}, function(err, result) {
+	book_model.find().count({}, function(err, result) {
 		if (err)
 			console.log(err);
 		else
@@ -97,17 +97,17 @@ router.get('/create', function(req, res) {
 
 router.post('/create', function(req, res) {
 	if (req.body) {
-		var db = new db();
-		db.name		= req.body.name;
-		db.isbn		= req.body.isbn;
-		db.year		= req.body.year;
-		db.author		= req.body.author.split(',');
-		db.pages		= req.body.pages;
-		db.paperback	= req.body.paperback;
-		db.genre		= req.body.genre;
-		db.url		= req.body.url;
+		var book_model = new book_model();
+		book_model.name		= req.body.name;
+		book_model.isbn		= req.body.isbn;
+		book_model.year		= req.body.year;
+		book_model.author		= req.body.author.split(',');
+		book_model.pages		= req.body.pages;
+		book_model.paperback	= req.body.paperback;
+		book_model.genre		= req.body.genre;
+		book_model.url		= req.body.url;
 		
-		db.save(function(err) {
+		book_model.save(function(err) {
 			if (err)
 				console.log(err);
 		});
@@ -118,12 +118,12 @@ router.post('/create', function(req, res) {
 
 router.get('/update', function(req, res) {
 	GetOne(req, function(data) {
-		res.render('update', { title: 'Update', paperbacks: config.paperback_types, genres: config.book_genres, db: data[0] });
+		res.render('update', { title: 'Update', paperbacks: config.paperback_types, genres: config.book_genres, book_model: data[0] });
 	});
 });
 
 router.post('/update', function(req, res) {
-	db.findOneAndUpdate(
+	book_model.findOneAndUpdate(
 		{ "isbn": req.body.init_isbn },
 		{
 			name		: req.body.name,
@@ -142,7 +142,7 @@ router.post('/update', function(req, res) {
 });
 
 router.delete('/delete', function(req, res) {
-	db.findOneAndRemove({ "isbn": req.query.isbn }, function(err, success) {
+	book_model.findOneAndRemove({ "isbn": req.query.isbn }, function(err, success) {
 		res.send('done');
 		console.log(success);
 	});
