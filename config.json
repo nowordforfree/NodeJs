@@ -1,0 +1,28 @@
+{
+	"paperback_types": [
+	"Paperback",
+	"Hardcover",
+	"Newspaper",
+	"Mass Market",
+	"Trade",
+	"Galleys",
+	"Chapbook"
+	],
+	"book_genres": [
+	"A Novel",
+	"Thriller",
+	"Phantastic",
+	"Poetry"
+	],
+	"display_columns": {
+		"isbn": "ISBN13",
+		"name": "Book Name",
+		"created": "Created"
+		},
+	"limit": 25,
+	"mongo": {
+		"ip": "localhost",
+		"port": "27017",
+		"dbname": "bookstore"
+	}
+}

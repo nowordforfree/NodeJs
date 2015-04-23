@@ -1,8 +1,6 @@
 var mongoose = require('../lib/mongoose');
 
-var Schema	= mongoose.Schema;
-
-var bookSchema = new Schema({
+var bookSchema = new mongoose.Schema({
 	name		: { type: String, required: true },
 	isbn		: { type: String, required: true, unique: true },
 	year		: { type: Number, required: true },

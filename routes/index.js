@@ -5,7 +5,7 @@ var config = require('../config');
 
 function GetBooks(req, callback) {
 	var page = (parseInt(req.query.page)) ? parseInt(req.query.page) : 1;
-	var skip = page > 0 ? ((page - 1) * 25) : 0;
+	var skip = page > 0 ? ((page - 1) * config.limit) : 0;
 	var options = { "_id": 0 };
 	var query = {};
 	for (var key in config.display_columns) {
@@ -18,7 +18,7 @@ function GetBooks(req, callback) {
 	book_model.find(
 		query,
 		options,
-		{ skip: skip, limit: 25, sort: { created: -1 }},
+		{ skip: skip, limit: config.limit, sort: { created: -1 }},
 		function(err, book_model) {
 			if (err) {
 				callback(err);
@@ -31,7 +31,7 @@ function GetBooks(req, callback) {
 
 function GetOne(req, callback) {
 	var page = (parseInt(req.query.page)) ? parseInt(req.query.page) : 1;
-	var skip = page > 0 ? ((page - 1) * 25) : 0;
+	var skip = page > 0 ? ((page - 1) * config.limit) : 0;
 	var options = { "_id": 0, "__v": 0 };
 	var query = {};
 	for (var key in req.query) {
@@ -61,7 +61,7 @@ router.get('/home', function(req, res) {
 		if (err)
 			console.log(err);
 		else
-			pagecount = Math.ceil(result / 25);
+			pagecount = Math.ceil(result / config.limit);
 	});
 	GetBooks(req, function(data) {
 		var columns = [];
@@ -98,14 +98,14 @@ router.get('/create', function(req, res) {
 router.post('/create', function(req, res) {
 	if (req.body) {
 		var book_model = new book_model();
-		book_model.name		= req.body.name;
-		book_model.isbn		= req.body.isbn;
-		book_model.year		= req.body.year;
+		book_model.name			= req.body.name;
+		book_model.isbn			= req.body.isbn;
+		book_model.year			= req.body.year;
 		book_model.author		= req.body.author.split(',');
 		book_model.pages		= req.body.pages;
 		book_model.paperback	= req.body.paperback;
 		book_model.genre		= req.body.genre;
-		book_model.url		= req.body.url;
+		book_model.url			= req.body.url;
 		
 		book_model.save(function(err) {
 			if (err)
@@ -118,7 +118,12 @@ router.post('/create', function(req, res) {
 
 router.get('/update', function(req, res) {
 	GetOne(req, function(data) {
-		res.render('update', { title: 'Update', paperbacks: config.paperback_types, genres: config.book_genres, book_model: data[0] });
+		res.render('update', {
+			title: 'Update',
+			paperbacks: config.paperback_types,
+			genres: config.book_genres,
+			book: data[0]
+		});
 	});
 });
 
