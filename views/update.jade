@@ -2,45 +2,46 @@ extends layout
 
 block content
   script(src='./javascripts/formvalidate.js')
-  h1 Update
-  hr
-  form#createForm(role='form', method='post', action='/update')
-    div.form-group
-      label.control-label(for='name') Book name:
-      input#name.form-control(type='text', value='#{book.name}', name='name')
-    div.form-group
-      label.control-label(for='isbn') ISBN13:
-      input#isbn.form-control(type='text', value='#{book.isbn}', name='isbn')
-      span.help-block.with-errors
-    div.form-group
-      label.control-label(for='year') Year:
-      input#year.form-control(type='text', value='#{book.year}', name='year')
-      span.help-block.with-errors
-    div.form-group
-      label.control-label(for='author') Book Author(s) (one author per line):
-      input#author.form-control(type='text', value='#{book.author}', name='author')
-    div.form-group
-      label.control-label(for='pages') How many pages:
-      input.form-control#pages(type='number', min=0, value='#{book.pages}', name='pages')
-    div.form-group
-      label.control-label(for='paperback') Type of paperback:
-      select.form-control(name='paperback')
-        each type, index in paperbacks
-          if type == book.paperback
-            option(value='#{type}', selected) #{type}
-          else
-            option(value='#{type}') #{type}
-    div.form-group
-      label.control-label(for='genre') Book genre:
-      select.form-control(name='genre')
-        each genre, index in genres
-          if genre == book.genre
-            option(value='#{genre}', selected) #{genre}
-          else
-            option(value='#{genre}') #{genre}
-    div.form-group
-      label.control-label(for='url') Url to this book on Amazon:
-      input#url.form-control(type='url', pattern='^(http[s]?://www.amazon.com).+', title='http://www.amazon.com/...', value='#{book.url}', name='url')
-    input(type='hidden', name='init_isbn', value='#{book.isbn}')
-    button.btn.btn-primary(type='submit') Update
-    a.btn.btn-default.pull-right(href='/home', role='button') Cancel
+  .container
+    h1 Update
+    hr
+    form#createForm(role='form', method='post', action='/update')
+      div.form-group
+        label.control-label(for='name') Book name:
+        input#name.form-control(type='text', value='#{book.name}', name='name')
+      div.form-group
+        label.control-label(for='isbn') ISBN13:
+        input#isbn.form-control(type='text', value='#{book.isbn}', name='isbn')
+        span.help-block.with-errors
+      div.form-group
+        label.control-label(for='year') Year:
+        input#year.form-control(type='text', value='#{book.year}', name='year')
+        span.help-block.with-errors
+      div.form-group
+        label.control-label(for='author') Book Author(s) (one author per line):
+        input#author.form-control(type='text', value='#{book.author}', name='author')
+      div.form-group
+        label.control-label(for='pages') How many pages:
+        input.form-control#pages(type='number', min=0, value='#{book.pages}', name='pages')
+      div.form-group
+        label.control-label(for='paperback') Type of paperback:
+        select.form-control(name='paperback')
+          each type, index in paperbacks
+            if type == book.paperback
+              option(value='#{type}', selected) #{type}
+            else
+              option(value='#{type}') #{type}
+      div.form-group
+        label.control-label(for='genre') Book genre:
+        select.form-control(name='genre')
+          each genre, index in genres
+            if genre == book.genre
+              option(value='#{genre}', selected) #{genre}
+            else
+              option(value='#{genre}') #{genre}
+      div.form-group
+        label.control-label(for='url') Url to this book on Amazon:
+        input#url.form-control(type='url', pattern='^(http[s]?://www.amazon.com).+', title='http://www.amazon.com/...', value='#{book.url}', name='url')
+      input(type='hidden', name='init_isbn', value='#{book.isbn}')
+      button.btn.btn-primary(type='submit') Update
+      a.btn.btn-default.pull-right(href='/home', role='button') Cancel

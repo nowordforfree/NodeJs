@@ -14,17 +14,17 @@ block content
       table#books-data.table.table-bordered.table-hover.table-responsive
         thead
           tr
-            each col, i in columns
+            each value, key in columns
               if i == columns.length - 1
-                th(colspan='3')= col
+                th(colspan='3')= value
               else
-                th= col
+                th= value
         tbody
           if(data)
             each book in data
               tr
-                each val in book
-                  td= val
+                each value, key in columns
+                  td= book[key]
                 td.icon
                   i.glyphicon.glyphicon-pencil
                 td.icon

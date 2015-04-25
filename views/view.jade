@@ -2,18 +2,17 @@ extends layout
 
 block content
   .container
-  h1 Book details:
-  hr
-  table#book.table.table-bordered.table-striped.table-responsive
-    thead
-      tr
-        th Field:
-        th Value:
-    tbody
-      if(data)
-        each book in data
-          each val, key in book
+    h1 Book details:
+    hr
+    table#book.table.table-bordered.table-striped.table-responsive
+      thead
+        tr
+          th Field:
+          th Value:
+      tbody
+        if(data)
+          each val, key in data
             tr
               td= key
               td= val
-  a.btn.btn-default.pull-right(href='/home', role='button') Back
+    a.btn.btn-default.pull-right(href='/home', role='button') Back

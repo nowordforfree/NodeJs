@@ -14,7 +14,7 @@ $(function () {
 			$("#isbn").closest(".form-group").addClass("has-error");
 		} else {
 			$.ajax({
-				dataType: "json",
+				type: "GET",
 				async: false,
 				url: initIsbn ? window.location.href.replace(/update.+/i, "getbook") : window.location.href.replace(/create/i, "getbook"),
 				data: "isbn=" + $("#isbn").val(),
@@ -43,8 +43,8 @@ $(function () {
 		} else { $("#url").closest(".form-group").removeClass("has-error").addClass("has-success"); }
 
 		function IsbnValidate (data) {
-			if (data.responseJSON.length) {
-				if (initIsbn && data.responseJSON[0].isbn == initIsbn)
+			if (data.responseText) {
+				if (initIsbn && data.responseJSON.isbn == initIsbn)
 					{ $("#isbn").closest(".form-group").removeClass("has-error").addClass("has-success"); }
 				else {
 					pass = false;
@@ -54,13 +54,13 @@ $(function () {
 			}
 			else $("#isbn").closest(".form-group").removeClass("has-error").addClass("has-success");
 		}
+		
+		if (!pass) {
+			e.preventDefault();
+		}
+	})
 
-	if (!pass) {
-		e.preventDefault();
-		return false;
+	function setError(container, errorMessage) {
+		$(container).append("<p>" + errorMessage + "</p>");
 	}
-})
-function setError(container, errorMessage) {
-	$(container).append("<p>" + errorMessage + "</p>");
-}
 });

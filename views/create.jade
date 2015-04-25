@@ -1,48 +1,49 @@
 extends layout
 
 block content
-  script(src='./javascripts/formvalidate.js')
-  h1 Create
-  p Please fill in all fields on form to create a new Book
-  hr
-  form#createForm(role='form', method='post', action='/create')
-    div.form-group
-      label.control-label(for='name') Book name:
-      input#name.form-control(type='text', name='name')
+  script(src='javascripts/formvalidate.js')
+  .container
+    h1 Create
+    p Please fill in all fields on form to create a new Book
+    hr
+    form#createForm(role='form', method='post', action='/create')
+      div.form-group
+        label.control-label(for='name') Book name:
+        input#name.form-control(type='text', name='name')
+        span.help-block.with-errors
+      div.form-group
+        label.control-label(for='isbn') ISBN13:
+        input#isbn.form-control(type='text', name='isbn')
+        span.help-block.with-errors
+      div.form-group
+        label.control-label(for='year') Year:
+        input#year.form-control(type='text', name='year')
+        span.help-block.with-errors
+      div.form-group
+        label.control-label(for='author') Book Author(s) (if multiple - separate by commas):
+        input#author.form-control(type='text', name='author')
+        span.help-block.with-errors
+      div.form-group
+        label.control-label(for='pages') How many pages:
+        input.form-control#pages(type='number', min=0, name='pages')
+        span.help-block.with-errors
+      div.form-group
+        label.control-label(for='paperback') Type of paperback:
+        select.form-control(name='paperback')
+          option(value='', disabled, selected) ...
+          each type, index in paperbacks
+            option(value='#{type}') #{type}
+        span.help-block.with-errors
+      div.form-group
+        label.control-label(for='genre') Book genre:
+        select.form-control(name='genre')
+          option(value='', disabled, selected) ...
+          each genre, index in genres
+            option(value='#{genre}') #{genre}
+        span.help-block.with-errors
+      div.form-group
+        label.control-label(for='url') Url to this book on Amazon:
+        input#url.form-control(type='url', pattern='^(http[s]?://www.amazon.com).+', title='http://www.amazon.com/...', name='url')
       span.help-block.with-errors
-    div.form-group
-      label.control-label(for='isbn') ISBN13:
-      input#isbn.form-control(type='text', name='isbn')
-      span.help-block.with-errors
-    div.form-group
-      label.control-label(for='year') Year:
-      input#year.form-control(type='text', name='year')
-      span.help-block.with-errors
-    div.form-group
-      label.control-label(for='author') Book Author(s) (if multiple - separate by commas):
-      input#author.form-control(type='text', name='author')
-      span.help-block.with-errors
-    div.form-group
-      label.control-label(for='pages') How many pages:
-      input.form-control#pages(type='number', min=0, name='pages')
-      span.help-block.with-errors
-    div.form-group
-      label.control-label(for='paperback') Type of paperback:
-      select.form-control(name='paperback')
-        option(value='', disabled, selected) ...
-        each type, index in paperbacks
-          option(value='#{type}') #{type}
-      span.help-block.with-errors
-    div.form-group
-      label.control-label(for='genre') Book genre:
-      select.form-control(name='genre')
-        option(value='', disabled, selected) ...
-        each genre, index in genres
-          option(value='#{genre}') #{genre}
-      span.help-block.with-errors
-    div.form-group
-      label.control-label(for='url') Url to this book on Amazon:
-      input#url.form-control(type='url', pattern='^(http[s]?://www.amazon.com).+', title='http://www.amazon.com/...', name='url')
-      span.help-block.with-errors
-    button.btn.btn-primary(type='submit') Submit
-    a.btn.btn-default.pull-right(href='/home', role='button') Cancel
+      button.btn.btn-primary(type='submit') Submit
+      a.btn.btn-default.pull-right(href='/home', role='button') Cancel

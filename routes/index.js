@@ -3,99 +3,70 @@ var router = express.Router();
 var book_model = require('../models/book_model');
 var config = require('../config');
 
-function GetBooks(req, callback) {
-	var page = (parseInt(req.query.page)) ? parseInt(req.query.page) : 1;
-	var skip = page > 0 ? ((page - 1) * config.limit) : 0;
-	var options = { "_id": 0 };
-	var query = {};
-	for (var key in config.display_columns) {
-		options[key] = 1
-	}
-	for (var key in req.query) {
-		if (key != "page")
-			query[key] = req.query[key];
-	}
-	book_model.find(
-		query,
-		options,
-		{ skip: skip, limit: config.limit, sort: { created: -1 }},
-		function(err, book_model) {
-			if (err) {
-				callback(err);
-			}
-			else {
-				callback(JSON.parse(JSON.stringify(book_model)));
-			}
-		});
-}
-
-function GetOne(req, callback) {
-	var page = (parseInt(req.query.page)) ? parseInt(req.query.page) : 1;
-	var skip = page > 0 ? ((page - 1) * config.limit) : 0;
-	var options = { "_id": 0, "__v": 0 };
-	var query = {};
-	for (var key in req.query) {
-		if (key != "page")
-			query[key] = req.query[key];
-	}
-	book_model.find(
-		query,
-		options,
-		function(err, book_model) {
-			if (err) {
-				callback(err);
-			}
-			else {
-				callback(JSON.parse(JSON.stringify(book_model)));
-			}
-		});
-}
 
 router.get('/', function(req, res) {
 	res.redirect('/home');
 });
 
 router.get('/home', function(req, res) {
-	var pagecount;
-	book_model.find().count({}, function(err, result) {
-		if (err)
-			console.log(err);
-		else
-			pagecount = Math.ceil(result / config.limit);
-	});
-	GetBooks(req, function(data) {
-		var columns = [];
-		for (var key in config.display_columns) {
-			columns[columns.length] = config.display_columns[key];
+	book_model.count(function(err, result) {
+		if (err) {
+			console.log('15. Error details: ' + err);
 		}
-		var currentpage = (parseInt(req.query.page)) ? parseInt(req.query.page) : 1;
-		res.render('home',
-			{ title: 'Home',
-			columns: columns,
-			data: data,
-			pages: pagecount,
-			current: currentpage,
-			genres: config.book_genres });
+		else {
+			var pagecount = Math.ceil(result / config.limit);
+			book_model.queryall(req.query, function(err, data) {
+				if (err) {
+					console.log('21. Error ocurred: ' + err);
+				}
+				else {
+					var currentpage = (parseInt(req.query.page)) ? parseInt(req.query.page) : 1;
+					res.render('home', {
+						title: 'Home',
+						columns: config.display_columns,
+						data: data,
+						pages: pagecount,
+						current: currentpage,
+						genres: config.book_genres
+					});
+				}
+			})
+		}
 	});
 });
 
-router.get('/getbook', function(req, res) {	
-	GetOne(req, function(data) {
-		res.send(data);
+router.get('/getbook', function(req, res) {
+	book_model.queryone(req.query, function(err, data) {
+		if (err) {
+			console.log('46. Some error occured: ' + err);
+		}
+		else {
+			res.send(data);
+		}
 	});
 })
 
 router.get('/view', function(req, res) {
-	GetOne(req, function(data) {
-		res.render('view', { title: 'View', data: data });
+	book_model.queryone(req.query, function(err, data) {
+		if (err) {
+			console.log('57. Some error occured: ' + err);
+		}
+		else {
+			res.render('view', { title: 'View', data: data });
+		}
 	});
 })
 
 router.get('/create', function(req, res) {
-	res.render('create', { title: 'Create', paperbacks: config.paperback_types, genres: config.book_genres });
+	res.render('create', {
+		title: 'Create',
+		paperbacks: config.paperback_types,
+		genres: config.book_genres
+	});
 });
 
 router.post('/create', function(req, res) {
+	console.log(req.body);
 	if (req.body) {
 		var book_model = new book_model();
 		book_model.name			= req.body.name;
@@ -108,26 +79,34 @@ router.post('/create', function(req, res) {
 		book_model.url			= req.body.url;
 		
 		book_model.save(function(err) {
-			if (err)
-				console.log(err);
+			if (err) {
+				console.log('87. Error: ' + err);
+			}
+			else {
+				res.redirect('/home');
+			}
 		});
-		
-		res.redirect('/home');
 	}
 });
 
 router.get('/update', function(req, res) {
-	GetOne(req, function(data) {
-		res.render('update', {
-			title: 'Update',
-			paperbacks: config.paperback_types,
-			genres: config.book_genres,
-			book: data[0]
-		});
+	book_model.queryone(req.query, function(err, data) {
+		if (err) {
+			console.log('99. Some error occured: ' + err);
+		}
+		else {
+			res.render('update', {
+				title: 'Update',
+				paperbacks: config.paperback_types,
+				genres: config.book_genres,
+				book: data
+			});
+		}
 	});
 });
 
 router.post('/update', function(req, res) {
+	console.log(req.body);
 	book_model.findOneAndUpdate(
 		{ "isbn": req.body.init_isbn },
 		{
@@ -140,17 +119,20 @@ router.post('/update', function(req, res) {
 			genre		: req.body.genre,
 			url			: req.body.url
 		}, function(err, success) {
-			if (err)
-				console.log(err);
+			if (err) {
+				console.log('126. Error: ' + err);
+			}
 			res.redirect('/home');
 		});
 });
 
 router.delete('/delete', function(req, res) {
 	book_model.findOneAndRemove({ "isbn": req.query.isbn }, function(err, success) {
-		res.send('done');
-		console.log(success);
+		if (err) {
+			console.log('136. Error: ' + err);
+		}
+		res.send('complete');
 	});
-})
+});
 
 module.exports = router;
