@@ -32,4 +32,32 @@ bookSchema.statics.queryone = function (queryparam, callback) {
 	return this.findOne(queryparam, options, callback).lean();
 }
 
+bookSchema.statics.add = function(entity, callback) {
+	var Book = mongoose.model('book', bookSchema);
+	Book.create({
+		name		: entity.name,
+		isbn		: entity.isbn,
+		year		: entity.year,
+		author		: entity.author.split(','),
+		pages		: entity.pages,
+		paperback	: entity.paperback,
+		genre		: entity.genre,
+		url			: entity.url
+	}, callback);
+}
+
+bookSchema.statics.update = function(entity, callback) {
+	return this.findOneAndUpdate(
+		{ "isbn": entity.init_isbn }, {
+			name		: entity.name,
+			isbn		: entity.isbn,
+			year		: entity.year,
+			author		: entity.author.split(','),
+			pages		: entity.pages,
+			paperback	: entity.paperback,
+			genre		: entity.genre,
+			url			: entity.url
+		}, callback);
+}
+
 module.exports = mongoose.model('book', bookSchema);

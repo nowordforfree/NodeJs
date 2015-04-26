@@ -2,25 +2,28 @@ var express = require('express');
 var router = express.Router();
 var book_model = require('../models/book_model');
 var config = require('../config');
+var logger = require('../logger/logger');
 
+logger.log('App started. Listening...'); 
 
 router.get('/', function(req, res) {
 	res.redirect('/home');
 });
 
 router.get('/home', function(req, res) {
-	book_model.count(function(err, result) {
+	var currentpage = (parseInt(req.query.page)) ? parseInt(req.query.page) : 1;
+	delete req.query.page;
+	book_model.count(req.query, function(err, result) {
 		if (err) {
-			console.log('15. Error details: ' + err);
+			logger.log('15. Error details: ' + err);
 		}
 		else {
 			var pagecount = Math.ceil(result / config.limit);
 			book_model.queryall(req.query, function(err, data) {
 				if (err) {
-					console.log('21. Error ocurred: ' + err);
+					logger.log('Routes/index. Line 21. Error ocurred: ' + err);
 				}
 				else {
-					var currentpage = (parseInt(req.query.page)) ? parseInt(req.query.page) : 1;
 					res.render('home', {
 						title: 'Home',
 						columns: config.display_columns,
@@ -38,7 +41,7 @@ router.get('/home', function(req, res) {
 router.get('/getbook', function(req, res) {
 	book_model.queryone(req.query, function(err, data) {
 		if (err) {
-			console.log('46. Some error occured: ' + err);
+			logger.log('Routes/index. Line 46. Error occured: ' + err);
 		}
 		else {
 			res.send(data);
@@ -49,7 +52,7 @@ router.get('/getbook', function(req, res) {
 router.get('/view', function(req, res) {
 	book_model.queryone(req.query, function(err, data) {
 		if (err) {
-			console.log('57. Some error occured: ' + err);
+			logger.log('Routes/index. Line 57. Error occured: ' + err);
 		}
 		else {
 			res.render('view', { title: 'View', data: data });
@@ -66,23 +69,13 @@ router.get('/create', function(req, res) {
 });
 
 router.post('/create', function(req, res) {
-	console.log(req.body);
 	if (req.body) {
-		var book_model = new book_model();
-		book_model.name			= req.body.name;
-		book_model.isbn			= req.body.isbn;
-		book_model.year			= req.body.year;
-		book_model.author		= req.body.author.split(',');
-		book_model.pages		= req.body.pages;
-		book_model.paperback	= req.body.paperback;
-		book_model.genre		= req.body.genre;
-		book_model.url			= req.body.url;
-		
-		book_model.save(function(err) {
+		book_model.add(req.body, function(err, item) {
 			if (err) {
-				console.log('87. Error: ' + err);
+				logger.log('Routes/index. Line 87. Error: ' + err);
 			}
 			else {
+				// redirect on view form of created item
 				res.redirect('/home');
 			}
 		});
@@ -92,7 +85,7 @@ router.post('/create', function(req, res) {
 router.get('/update', function(req, res) {
 	book_model.queryone(req.query, function(err, data) {
 		if (err) {
-			console.log('99. Some error occured: ' + err);
+			logger.log('Routes/index. Line 99. Error occured: ' + err);
 		}
 		else {
 			res.render('update', {
@@ -106,21 +99,9 @@ router.get('/update', function(req, res) {
 });
 
 router.post('/update', function(req, res) {
-	console.log(req.body);
-	book_model.findOneAndUpdate(
-		{ "isbn": req.body.init_isbn },
-		{
-			name		: req.body.name,
-			isbn		: req.body.isbn,
-			year		: req.body.year,
-			author		: req.body.author.split(','),
-			pages		: req.body.pages,
-			paperback	: req.body.paperback,
-			genre		: req.body.genre,
-			url			: req.body.url
-		}, function(err, success) {
+	book_model.update(req.body, function(err, success) {
 			if (err) {
-				console.log('126. Error: ' + err);
+				logger.log('Routes/index. Line 126. Error: ' + err);
 			}
 			res.redirect('/home');
 		});
@@ -129,7 +110,7 @@ router.post('/update', function(req, res) {
 router.delete('/delete', function(req, res) {
 	book_model.findOneAndRemove({ "isbn": req.query.isbn }, function(err, success) {
 		if (err) {
-			console.log('136. Error: ' + err);
+			logger.log('Routes/index. Line 136. Error: ' + err);
 		}
 		res.send('complete');
 	});
