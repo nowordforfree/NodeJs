@@ -16,6 +16,9 @@ router.get('/home', function(req, res) {
 	book_model.count(req.query, function(err, result) {
 		if (err) {
 			logger.log('15. Error details: ' + err);
+			res.render('error', {
+				message: 'Oops... some error with db occured. For more details please look at log file'
+			});
 		}
 		else {
 			var pagecount = Math.ceil(result / config.limit);
@@ -53,6 +56,9 @@ router.get('/view', function(req, res) {
 	book_model.queryone(req.query, function(err, data) {
 		if (err) {
 			logger.log('Routes/index. Line 57. Error occured: ' + err);
+			res.render('error', {
+				message: 'Oops... some error with db occured. For more details please look at log file'
+			});
 		}
 		else {
 			res.render('view', { title: 'View', data: data });
@@ -73,6 +79,9 @@ router.post('/create', function(req, res) {
 		book_model.add(req.body, function(err, item) {
 			if (err) {
 				logger.log('Routes/index. Line 87. Error: ' + err);
+				res.render('error', {
+					message: 'Oops... some error with db occured. For more details please look at log file'
+				});
 			}
 			else {
 				// redirect on view form of created item
@@ -86,6 +95,9 @@ router.get('/update', function(req, res) {
 	book_model.queryone(req.query, function(err, data) {
 		if (err) {
 			logger.log('Routes/index. Line 99. Error occured: ' + err);
+			res.render('error', {
+				message: 'Oops... some error with db occured. For more details please look at log file'
+			});
 		}
 		else {
 			res.render('update', {
@@ -102,8 +114,13 @@ router.post('/update', function(req, res) {
 	book_model.update(req.body, function(err, success) {
 			if (err) {
 				logger.log('Routes/index. Line 126. Error: ' + err);
+				res.render('error', {
+					message: 'Oops... some error with db occured. For more details please look at log file'
+				});
 			}
-			res.redirect('/home');
+			else {
+				res.redirect('/home');
+			}
 		});
 });
 
@@ -111,8 +128,13 @@ router.delete('/delete', function(req, res) {
 	book_model.findOneAndRemove({ "isbn": req.query.isbn }, function(err, success) {
 		if (err) {
 			logger.log('Routes/index. Line 136. Error: ' + err);
+			res.render('error', {
+				message: 'Oops... some error with db occured. For more details please look at log file'
+			});
 		}
-		res.send('complete');
+		else {
+			res.send('complete');
+		}
 	});
 });
 
