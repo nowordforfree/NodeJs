@@ -10,16 +10,13 @@ block content
         h1 Here will be content
         p which will be recieved from db
         a#filter.btn.btn-default(href='#') Show / Hide filter
-        a#create.btn.btn-default.pull-right(href='/create') Create New Book
+        a#create.btn.btn-primary.pull-right(href='/create') Create New Book
       hr
       table#books-data.table.table-bordered.table-hover.table-responsive
         thead
           tr
             each value, key in columns
-              if i == columns.length - 1
-                th(colspan='3')= value
-              else
-                th= value
+              th= value
         tbody
           if(data)
             each book in data

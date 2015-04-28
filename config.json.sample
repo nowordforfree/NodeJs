@@ -24,7 +24,7 @@
 		},
 	"limit": 25,
 	"mongo": {
-		"ip": "10.10.100.133",
+		"ip": "localhost",
 		"port": "27017",
 		"dbname": "bookstore"
 	}
