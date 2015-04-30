@@ -1,6 +1,7 @@
 var fs = require('fs');
+var path = require('path');
 
-var dir = './logs/';
+var dir = path.join(__dirname, '../logs');
 var file = 'app.log';
 
 fs.log = function(message) {
@@ -8,14 +9,14 @@ fs.log = function(message) {
 		if (!fs.existsSync(dir)){
 			fs.mkdirSync(dir);
 		}
-		if (!fs.existsSync(dir + file)) {
-			fs.writeFile(dir + file, "", function (err) {
+		if (!fs.existsSync(path.join(dir, file))) {
+			fs.writeFile(path.join(dir, file), "", function (err) {
 				if (err) {
 					throw err;
 				}
 			});
 		}
-		fs.appendFile(dir + file, new Date().toLocaleString() + ' ' + message + '\n', function (err) {
+		fs.appendFile(path.join(dir, file), new Date().toLocaleString() + ' ' + message + '\n', function (err) {
 			if (err) {
 				throw err;
 			}
