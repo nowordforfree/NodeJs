@@ -33,8 +33,7 @@ bookSchema.statics.queryone = function (queryparam, callback) {
 }
 
 bookSchema.statics.add = function(entity, callback) {
-	var Book = mongoose.model('book', bookSchema);
-	Book.create({
+	return this.create({
 		name		: entity.name,
 		isbn		: entity.isbn,
 		year		: entity.year,
