@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
 // MissingSchemaError: Schema hasn't been registered for model "book"
-// var book = require('../lib/mongoose').model('book');
+// var book = mongoose.model('book');
+// to get this (string above) work need to pass schema as second parameter
 var book = require('../models/book');
 var config = require('../config');
 
@@ -13,16 +14,25 @@ router.get('/', function(req, res) {
 router.get('/home', function(req, res, next) {
 	var currentpage = (parseInt(req.query.page)) ? parseInt(req.query.page) : 1;
 	delete req.query.page;
+	if (!book.readyState) {
+		var error = new Error('Not connected to DB');
+		error.status = 500;
+		return next(error, req, res);
+	}		
 	book.count(req.query, function(err, result) {
 		if (err) {
-			//return next({err.message: 'Oops... some error with db occured. For more details please look at log file'});
-			return next(err);
+			var error = new Error(err);
+			error.status = 500;
+			return next(error, req, res);
 		}
 		var pagecount = Math.ceil(result / config.limit);
 		book.queryall(req.query, function(err, data) {
 			if (err) {
-				return next(err);
+				var error = new Error(err);
+				error.status = 500;
+				return next(error, req, res);
 			}
+
 			res.render('home', {
 				title: 'Home',
 				columns: config.display_columns,
@@ -38,25 +48,24 @@ router.get('/home', function(req, res, next) {
 router.get('/getbook', function(req, res) {
 	book.queryone(req.query, function(err, data) {
 		if (err) {
-			logger.log('Routes/index. Line 46. Error occured: ' + err);
+			var error = new Error(err);
+			error.status = 500;
+			return next(error, req, res);
 		}
-		else {
-			res.send(data);
-		}
+
+		res.send(data);
 	});
 })
 
 router.get('/view', function(req, res) {
 	book.queryone(req.query, function(err, data) {
 		if (err) {
-			logger.log('Routes/index. Line 57. Error occured: ' + err);
-			res.render('error', {
-				message: 'Oops... some error with db occured. For more details please look at log file'
-			});
+			var error = new Error(err);
+			error.status = 500;
+			return next(error, req, res);
 		}
-		else {
-			res.render('view', { title: 'View', data: data });
-		}
+
+		res.render('view', { title: 'View', data: data });
 	});
 })
 
@@ -70,61 +79,59 @@ router.get('/create', function(req, res) {
 
 router.post('/create', function(req, res, next) {
 	if (!req.body) {
-		return next({err: 'No body in request'});
+		var error = new Error('No data has been sent in request body');
+		error.status = 500;
+		return next(error, req, res);
 	}
 	book.add(req.body, function(err, item) {
 		if (err) {
-			return next(err);
+			var error = new Error(err);
+			error.status = 500;
+			return next(error, req, res);
 		}
 		// redirect on view form of created item
-		res.redirect('/home');
+		res.render('/home');
 	});
 });
 
 router.get('/update', function(req, res) {
 	book.queryone(req.query, function(err, data) {
 		if (err) {
-			logger.log('Routes/index. Line 99. Error occured: ' + err);
-			res.render('error', {
-				message: 'Oops... some error with db occured. For more details please look at log file'
-			});
+			var error = new Error(err);
+			error.status = 500;
+			return next(error, req, res);
 		}
-		else {
-			res.render('update', {
-				title: 'Update',
-				paperbacks: config.paperback_types,
-				genres: config.book_genres,
-				book: data
-			});
-		}
+
+		res.render('update', {
+			title: 'Update',
+			paperbacks: config.paperback_types,
+			genres: config.book_genres,
+			book: data
+		});
 	});
 });
 
 router.post('/update', function(req, res) {
 	book.update(req.body, function(err, success) {
 		if (err) {
-			logger.log('Routes/index. Line 126. Error: ' + err);
-			res.render('error', {
-				message: 'Oops... some error with db occured. For more details please look at log file'
-			});
+			var error = new Error(err);
+			error.status = 500;
+			return next(error, req, res);
 		}
-		else {
-			res.redirect('/home');
-		}
+
+		res.redirect('/home');
 	});
 });
 
 router.delete('/delete', function(req, res) {
 	book.findOneAndRemove({ "isbn": req.query.isbn }, function(err, success) {
 		if (err) {
-			logger.log('Routes/index. Line 136. Error: ' + err);
-			res.render('error', {
-				message: 'Oops... some error with db occured. For more details please look at log file'
-			});
+			var error = new Error(err);
+			error.status = 500;
+			return next(error, req, res);
 		}
-		else {
-			res.send('complete');
-		}
+
+		res.send('complete');
 	});
 });
 
